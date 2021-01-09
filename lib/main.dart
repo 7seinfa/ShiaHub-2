@@ -96,9 +96,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }catch(e){
       print(e.toString());
     }
-    await requestPermission();
+    await Geolocator.requestPermission();
     BackgroundFetch.configure(BackgroundFetchConfig(
         minimumFetchInterval: 15,
+        forceAlarmManager: true,
         stopOnTerminate: false,
         enableHeadless: true,
         requiresBatteryNotLow: false,
