@@ -112,8 +112,14 @@ class _DuaState extends State<Dua> {
     loadDuas();
     super.initState();
   }
+  @override
+  void dispose(){
+    release();
+    super.dispose();
+  }
 
   Future<void> loadDuas() async {
+    audioPlayer = AudioPlayer();
     prefs = await SharedPreferences.getInstance();
     engS = new BehaviorSubject<bool>();
     arS = new BehaviorSubject<bool>();
