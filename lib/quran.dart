@@ -85,14 +85,15 @@ class _JuzState extends State<Juz> {
     super.initState();
   }
   void loadInfo()async{
-    var prefs=await SharedPreferences.getInstance();
     
+    surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quran.json'));
     for(int i=0; i<=29;i++){
-      surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quran.json'));
+      
       
       cards.add(
         HomeCard(title: "Juz' " + (i+1).toString(), fullLength: true,
          route: () async{
+          var prefs=await SharedPreferences.getInstance();
           if(prefs.containsKey("eng") && prefs.containsKey("fa") && prefs.containsKey("ur")){
             if(prefs.getBool("eng")){
               eng=true;
@@ -2052,41 +2053,45 @@ class _SurahState extends State<Surah> {
   }
 
   Future<void> load()async{
-    prefs = await SharedPreferences.getInstance();
     
+    
+    
+    var surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quran.json'));
     var surahs = json.decode(await loadSurahInfo('assets/jsons/quran/surahinfo.json'));
-    reciteJson = json.decode(await loadSurahInfo('assets/jsons/quran/surahinfo.json'));
     for(int i=0; i<=113;i++){
-      var engAyasInSura;
-      List<String> engAyas = [];
-      var urAyasInSura;
-      List<String> urAyas = [];
-      var faAyasInSura;
-      List<String> faAyas = [];
-      List<String> arAyas = [];
-
-      var ayasInSura;
       
-      var engTranslation;
-      var urTranslation;
-      var faTranslation;
-      
-      engAyas = [];
-      urAyas = [];
-      faAyas = [];
-      done=false;
-
-
-      var surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quran.json'));
-      ayasInSura = surahList["quran"]["sura"][i]["aya"];
-      engAyasInSura = [];
-      faAyasInSura = [];
-      urAyasInSura = [];
-      tafsirAfter = [];
       cards.add(
         HomeCard(title: (i+1).toString()+ ". Surah " + surahs[i]["title"], fullLength: true,
          route: ()async{
+          prefs = await SharedPreferences.getInstance();
+          var engAyasInSura;
+          List<String> engAyas = [];
+          var urAyasInSura;
+          List<String> urAyas = [];
+          var faAyasInSura;
+          List<String> faAyas = [];
+          List<String> arAyas = [];
 
+          var ayasInSura;
+          
+          var engTranslation;
+          var urTranslation;
+          var faTranslation;
+          
+          engAyas = [];
+          urAyas = [];
+          faAyas = [];
+          done=false;
+
+
+          
+          ayasInSura = surahList["quran"]["sura"][i]["aya"];
+          engAyasInSura = [];
+          faAyasInSura = [];
+          urAyasInSura = [];
+          tafsirAfter = [];
+      
+          reciteJson = surahs;
           eng=true;
           if(prefs.getString("engTrans")=="sarwar"){
             engTranslation = json.decode(await loadSurahInfo('assets/jsons/quran/sarwar.json'));
@@ -2110,6 +2115,8 @@ class _SurahState extends State<Surah> {
           if(!prefs.containsKey("eng")){
             eng=false;
             engValue = "none";
+            prefs.setBool("eng", false);
+            prefs.setString("engTrans", "none");
           }
           ur=true;
           if(prefs.getString("urTrans")=="najafi"){
@@ -2133,6 +2140,8 @@ class _SurahState extends State<Surah> {
           if(!prefs.containsKey("ur")){
             ur=false;
             urValue = "none";
+            prefs.setBool("ur", false);
+            prefs.setString("urTrans", "none");
           }
           fa=true;
           if(prefs.getString("faTrans")=="makarem"){
@@ -2156,6 +2165,8 @@ class _SurahState extends State<Surah> {
           if(!prefs.containsKey("fa")){
             fa=false;
             faValue = "none";
+            prefs.setBool("fa", false);
+            prefs.setString("faTrans", "none");
           }
           if(i!=0&&i!=8){
             arAyas.add(surahList["quran"]["sura"][0]["aya"][0]["-text"]);
