@@ -25,11 +25,12 @@ import 'package:http/http.dart' as http;
     if(isLocal){
       await audioPlayer.play(kUrl, isLocal: true);
     }else{
-      await audioPlayer.play(kUrl);
+      print(kUrl);
+      print(await audioPlayer.play(kUrl));
     }
     playerState = PlayerState.play;
     isPlay=Icon(Icons.pause);
-    currentPage.ref;
+    //currentPage.ref;
   }
 
   Future<void> pause() async {

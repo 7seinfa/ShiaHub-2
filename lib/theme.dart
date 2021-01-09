@@ -5,7 +5,7 @@ import 'package:tinycolor/tinycolor.dart';
 bool darkModeOn (){
   var brightness = SchedulerBinding.instance.window.platformBrightness;
   //return brightness==Brightness.light?false:true;
-  return true;
+  return false;
 }
 
 double titleSize (BuildContext context){

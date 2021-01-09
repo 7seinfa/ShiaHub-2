@@ -174,13 +174,13 @@ setNotifcations(String s) async{
       ..longitude=prefs.getDouble('longitude')
       ..altitude=0);
   }else{
-    LocationPermission permission = await checkPermission();
-    while(permission==null){permission = await checkPermission();}
+    LocationPermission permission = await Geolocator.checkPermission();
+    while(permission==null){permission = await Geolocator.checkPermission();}
     Position position;
     if(permission==LocationPermission.denied||permission==LocationPermission.deniedForever){
       return [DateTime.now().subtract(Duration(hours:DateTime.now().hour, minutes: DateTime.now().minute),),DateTime.now().subtract(Duration(hours:DateTime.now().hour, minutes: DateTime.now().minute),),DateTime.now().subtract(Duration(hours:DateTime.now().hour, minutes: DateTime.now().minute),),DateTime.now().subtract(Duration(hours:DateTime.now().hour, minutes: DateTime.now().minute),),DateTime.now().subtract(Duration(hours:DateTime.now().hour, minutes: DateTime.now().minute),),DateTime.now().subtract(Duration(hours:DateTime.now().hour, minutes: DateTime.now().minute),),DateTime.now().subtract(Duration(hours:DateTime.now().hour, minutes: DateTime.now().minute),)];
     }else{
-      position = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      position = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
       geo = Geocoordinate((GeocoordinateBuilder b) => b
         ..latitude = position.latitude
         ..longitude = position.longitude
@@ -252,7 +252,7 @@ setNotifcations(String s) async{
   if(prefs.getBool('maghribOn')==null) {await prefs.setBool('maghribOn', true); maghribOn=true;}
   else maghribOn=prefs.getBool('maghribOn');
   var notifcationdetails;
-  var rammal = NotificationDetails(android:AndroidNotificationDetails('adhanChannelRammal', 'Adhan', 'Adhan', sound: RawResourceAndroidNotificationSound('rammal'), playSound: true, priority: Priority.max, importance: Importance.max));
+  var rammal = NotificationDetails(android:AndroidNotificationDetails('adhanChannelRammal', 'Adhan', 'Adhan', sound: RawResourceAndroidNotificationSound('rammal'), playSound: true, priority: Priority.max, importance: Importance.max, enableVibration: true));
   var qatari = NotificationDetails(android:AndroidNotificationDetails('adhanChannelQatari', 'Adhan', 'Adhan', sound: RawResourceAndroidNotificationSound('qatari'), playSound: true, priority: Priority.max, importance: Importance.max, enableVibration: true));
   var dabbagh = NotificationDetails(android:AndroidNotificationDetails('adhanChannelDabbagh', 'Adhan', 'Adhan', sound: RawResourceAndroidNotificationSound('dabbagh'), playSound: true, priority: Priority.max, importance: Importance.max, enableVibration: true));
   var tlees = NotificationDetails(android:AndroidNotificationDetails('adhanChannelTlees', 'Adhan', 'Adhan', sound: RawResourceAndroidNotificationSound('tlees'), playSound: true, priority: Priority.max, importance: Importance.max, enableVibration: true));

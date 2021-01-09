@@ -93,7 +93,7 @@ class _JuzState extends State<Juz> {
       cards.add(
         HomeCard(title: "Juz' " + (i+1).toString(), fullLength: true,
          route: () async{
-          if(prefs.containsKey("eng")){
+          if(prefs.containsKey("eng") && prefs.containsKey("fa") && prefs.containsKey("ur")){
             if(prefs.getBool("eng")){
               eng=true;
               if(prefs.getString("engTrans")=="sarwar"){
@@ -165,9 +165,9 @@ class _JuzState extends State<Juz> {
               faValue = "none";
             }
           }else{
-            prefs.setString("engTrans", "sarwar");
-            prefs.setString("urTrans", "najafi");
-            prefs.setString("faTrans", "makarem");
+            prefs.setString("engTrans", "none");
+            prefs.setString("urTrans", "none");
+            prefs.setString("faTrans", "none");
             prefs.setBool("eng", false);
             eng=false;
             prefs.setBool("ur", false);
@@ -494,6 +494,7 @@ class _JuzViewState extends State<JuzView> {
   }
 
   Future<String> getJsonData() async{
+    audioPlayer = AudioPlayer();
     engS = new BehaviorSubject<bool>();
     urS = new BehaviorSubject<bool>();
     faS = new BehaviorSubject<bool>();
@@ -1007,6 +1008,7 @@ class _JuzViewState extends State<JuzView> {
       print('Max duration: $d');
       setState(() => duration = d);
     });
+
     audioPlayer.onAudioPositionChanged.listen((Duration  p){
       print('Position: $p');
       setState(() => position = p);
@@ -1206,9 +1208,9 @@ class _JuzViewState extends State<JuzView> {
           ayas.length>x?widgetInRows.add(ayas[x]):widgetInRows.add(HomeCard(title: "", isBlank: true,));
           x++;
         }
-        rows.add(Row(
+        rows.add(KeepWidgetAlive(Row(
           children: widgetInRows,
-        ));
+        )));
       }
       return rows;
     }
@@ -2325,6 +2327,7 @@ class _SurahViewState extends State<SurahView> {
   }
 
   Future<String> getJsonData() async{
+    audioPlayer = AudioPlayer();
     engS = new BehaviorSubject<bool>();
     urS = new BehaviorSubject<bool>();
     faS = new BehaviorSubject<bool>();
@@ -2489,14 +2492,19 @@ class _SurahViewState extends State<SurahView> {
                   ),
                   child: Padding(
                     padding: EdgeInsets.fromLTRB(constraint.biggest.width*0.03, constraint.biggest.width*0.01, constraint.biggest.width*0.03, constraint.biggest.width*0.01),
-                    child:   Column(
+                    child: Column(
                       children: [
-                        Text(font?arAyas[i]:engNumToInd(arAyas[i]), textDirection: TextDirection.rtl, textAlign: TextAlign.center, style: TextStyle(
-                          color: MyColors.text(),
-                          fontSize: prefs.getDouble("quranArabicFont"),
-                          fontFamily: font?"Quran":"IndoPak",
-                          fontFamilyFallback: ["QuranBackup"]
-                        ),),
+                        Builder(builder: 
+                          (context) {
+                            return Text(font?arAyas[i]:engNumToInd(arAyas[i]), textDirection: TextDirection.rtl, textAlign: TextAlign.center, style: TextStyle(
+                              color: MyColors.text(),
+                              fontSize: prefs.getDouble("quranArabicFont"),
+                              fontFamily: font?"Quran":"IndoPak",
+                              fontFamilyFallback: ["QuranBackup"]
+                            ),);
+                          }
+                        ),
+                        
                         StreamBuilder(
                           stream: engS.stream.asBroadcastStream(),
                           builder: (BuildContext context, AsyncSnapshot<bool> snapshot) {
@@ -2772,9 +2780,10 @@ class _SurahViewState extends State<SurahView> {
     setState(() {
       
     });
+    setState(() {});
     WidgetsBinding.instance
     .addPostFrameCallback((_) => update());
-    setState(() {});
+    
     return 'success';
   }
 
@@ -2814,13 +2823,13 @@ class _SurahViewState extends State<SurahView> {
   Duration duration;
   Duration position;
   
-  void update() async {
+  update() async {
     isPlay = Icon(Icons.play_arrow);
     String path = (await localFileSave).path;
-    String name = "Surah "+ reciteJson[widget.surahNum+1]["title"] + " - " + curName;
+    String name = "Surah "+ reciteJson[widget.surahNum]["title"] + " - " + curName;
     String temp = "$path/$name.mp3";
     File file = new File(temp);
-    print(temp);
+    //print(temp);
     if(await file.exists()) {
       await play(temp, isLocal: true);
       var snackBar = SnackBar(
@@ -2830,7 +2839,6 @@ class _SurahViewState extends State<SurahView> {
       // Find the Scaffold in the widget tree and use it to show a SnackBar.
       _scaffoldKey.currentState.showSnackBar(snackBar);
     }else {
-      print(curRecite);
       await play(curRecite);
       var snackBar = SnackBar(
         content: Text('Loaded Online'),
@@ -2892,9 +2900,9 @@ class _SurahViewState extends State<SurahView> {
           ayas.length>x?widgetInRows.add(ayas[x]):widgetInRows.add(HomeCard(title: "", isBlank: true,));
           x++;
         }
-        rows.add(Row(
+        rows.add(KeepWidgetAlive(Row(
           children: widgetInRows,
-        ));
+        )));
       }
       return rows;
     }
@@ -3300,11 +3308,13 @@ class _SurahViewState extends State<SurahView> {
                                 items: recites,
                                 iconEnabledColor: MyColors.text(),
                                 onChanged: (value) async {
+                                  AudioPlayer.logEnabled=false;
+                                  print(value);
                                   curRecite = value;
                                   release();
                                   isPlay = Icon(Icons.play_arrow);
                                   String path = (await localFileSave).path;
-                                  String name = "Surah "+ reciteJson[widget.surahNum+1]["title"] + " - " + curName;
+                                  String name = "Surah "+ reciteJson[widget.surahNum]["title"] + " - " + curName;
                                   String temp = "$path/$name.mp3";
                                   File file = new File(temp);
                                   print(temp);
@@ -3684,6 +3694,26 @@ class _SurahViewState extends State<SurahView> {
       
     );
   }
+}
+
+
+class KeepWidgetAlive extends StatefulWidget{
+  Widget widgetToKeep;
+  KeepWidgetAlive(this.widgetToKeep, {Key key}) : super(key: key);
+  
+  @override
+  _KeepWidgetAliveState createState() => _KeepWidgetAliveState();
+}
+class _KeepWidgetAliveState extends State<KeepWidgetAlive> with AutomaticKeepAliveClientMixin {
+
+  @override
+  Widget build(BuildContext context){
+    super.build(context);
+    return widget.widgetToKeep;
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 String engNumToArb(String s){
