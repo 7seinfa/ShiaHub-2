@@ -86,7 +86,7 @@ class _JuzState extends State<Juz> {
   }
   void loadInfo()async{
     
-    surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quran.json'));
+    surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quranUthmani.json'));
     for(int i=0; i<=29;i++){
       
       
@@ -187,34 +187,34 @@ class _JuzState extends State<Juz> {
           endAya = juzNums[i]["end"]["ayaNum"]-1;
           if(startSurah==endSurah){
             
-            ayasInSura.add(surahList["quran"]["sura"][startSurah]["aya"][0]["-bismillah"]);
+            ayasInSura.add(surahList["quran"]["sura"][0]["aya"][0]["-text"]);
             if(startSurah==juzNums[i]["beginning"]["surahNum"]){
               for(int x=startAya; x<=endAya; x++){
-                ayasInSura.add(surahList["quran"]["sura"][startSurah]["aya"][x]["-text"] + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
+                ayasInSura.add(surahList["quran"]["sura"][startSurah]["aya"][x]["-text"].replaceAll('\u06ED', '') + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
               }
             }else{
               for(int x=startAya; x<=endAya; x++){
-                ayasInSura.add(surahList["quran"]["sura"][endSurah]["aya"][x]["-text"] + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
+                ayasInSura.add(surahList["quran"]["sura"][endSurah]["aya"][x]["-text"].replaceAll('\u06ED', '') + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
               }
             }
           }else{
             for(int x=startSurah; x<endSurah; x++){
               if(x!=0&&x!=8){
-                ayasInSura.add(surahList["quran"]["sura"][startSurah]["aya"][0]["-bismillah"]);
+                ayasInSura.add(surahList["quran"]["sura"][startSurah]["aya"][0]["-bismillah"].replaceAll('\u06ED', ''));
               }else if(x==8){
                 ayasInSura.add("");
               }
               for(int y=startAya; y<surahList["quran"]["sura"][x]["aya"].length; y++){
-                ayasInSura.add(surahList["quran"]["sura"][x]["aya"][y]["-text"] + "\n﴿" + engNumToArb((y+1).toString()) + "﴾");
+                ayasInSura.add(surahList["quran"]["sura"][x]["aya"][y]["-text"].replaceAll('\u06ED', '') + "\n﴿" + engNumToArb((y+1).toString()) + "﴾");
               }
             }
             if(endSurah!=0&&endSurah!=8){
-              ayasInSura.add(surahList["quran"]["sura"][endSurah]["aya"][0]["-bismillah"]);
+              ayasInSura.add(surahList["quran"]["sura"][0]["aya"][0]["-text"].replaceAll('\u06ED', ''));
             }else if(endSurah==8){
               ayasInSura.add("");
             }
             for(int x=0; x<=endAya; x++){
-              ayasInSura.add(surahList["quran"]["sura"][endSurah]["aya"][x]["-text"] + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
+              ayasInSura.add(surahList["quran"]["sura"][endSurah]["aya"][x]["-text"].replaceAll('\u06ED', '') + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
             }
           }
           if(eng){
@@ -697,11 +697,11 @@ class _JuzViewState extends State<JuzView> {
                     padding: EdgeInsets.fromLTRB(constraint.biggest.width*0.03, constraint.biggest.width*0.01, constraint.biggest.width*0.03, constraint.biggest.width*0.01),
                     child:   Column(
                       children: [
-                        Text(font?ayasInSura[i]:engNumToInd(ayasInSura[i]), textDirection: TextDirection.rtl, textAlign: TextAlign.center, style: TextStyle(
+                        Text(font?ayasInSura[i].replaceAll('لَٰٓ','لَـٰۤـ').replaceAll('ٱلْءَا','ٱلۡـَٔا'):engNumToInd(ayasInSura[i].replaceAll('ٌ ۖ','ٌ   ۖ')), textDirection: TextDirection.rtl, textAlign: TextAlign.center, style: TextStyle(
                           color: MyColors.text(),
                           fontSize: prefs.getDouble("quranArabicFont"),
-                          fontFamily: font?"Quran":"IndoPak",
-                          fontFamilyFallback: font?["QuranBackup"]:["Quran"]
+                          fontFamily: font?"Kitab":"IndoPak",
+                          fontFamilyFallback: ["Quran"]
                         ),),
                         StreamBuilder(
                           stream: engS.stream.asBroadcastStream(),
@@ -1849,7 +1849,9 @@ class _JuzViewState extends State<JuzView> {
             toolbarHeight: toolbarSize(context),
             backgroundColor: MyColors.appBar(),
             leading: Padding(
-              child: IconButton(icon: Icon(Icons.arrow_back_ios), onPressed: (){Navigator.of(context).pop();}, ),
+              child: IconButton(icon: Icon(Icons.arrow_back_ios), onPressed: (){isSettings=false;setState(() {
+                
+              });}, ),
               padding: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.015),
             ),
             title: Padding(
@@ -2056,7 +2058,7 @@ class _SurahState extends State<Surah> {
     
     
     
-    var surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quran.json'));
+    var surahList = json.decode(await loadSurahInfo('assets/jsons/quran/quranUthmani.json'));
     var surahs = json.decode(await loadSurahInfo('assets/jsons/quran/surahinfo.json'));
     for(int i=0; i<=113;i++){
       
@@ -2175,7 +2177,7 @@ class _SurahState extends State<Surah> {
             faAyas.add(faTranslation["quran"]["sura"][0]["aya"][0]["-text"]);
           }
           for(int x = 0; x<ayasInSura.length; x++){
-            arAyas.add(ayasInSura[x]["-text"] + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
+            arAyas.add(ayasInSura[x]["-text"].replaceAll('\u06ED', '') + "\n﴿" + engNumToArb((x+1).toString()) + "﴾");
             engAyas.add(engAyasInSura[x]["-text"]);
             urAyas.add(urAyasInSura[x]["-text"]);
             faAyas.add(faAyasInSura[x]["-text"]);
@@ -2507,11 +2509,11 @@ class _SurahViewState extends State<SurahView> {
                       children: [
                         Builder(builder: 
                           (context) {
-                            return Text(font?arAyas[i]:engNumToInd(arAyas[i]), textDirection: TextDirection.rtl, textAlign: TextAlign.center, style: TextStyle(
+                            return Text(font?arAyas[i].replaceAll('لَٰٓ','لَـٰۤـ').replaceAll('ٱلْءَا','ٱلۡـَٔا'):engNumToInd(arAyas[i].replaceAll('ٌ ۖ','ٌ   ۖ')), textDirection: TextDirection.rtl, textAlign: TextAlign.center, style: TextStyle(
                               color: MyColors.text(),
                               fontSize: prefs.getDouble("quranArabicFont"),
-                              fontFamily: font?"Quran":"IndoPak",
-                              fontFamilyFallback: ["QuranBackup"]
+                              fontFamily: font?"Kitab":"IndoPak",
+                              fontFamilyFallback: ["Quran"]
                             ),);
                           }
                         ),
@@ -3553,7 +3555,9 @@ class _SurahViewState extends State<SurahView> {
             toolbarHeight: toolbarSize(context),
             backgroundColor: MyColors.appBar(),
             leading: Padding(
-              child: IconButton(icon: Icon(Icons.arrow_back_ios), onPressed: (){Navigator.of(context).pop();}, ),
+              child: IconButton(icon: Icon(Icons.arrow_back_ios), onPressed: (){isSettings=false;setState(() {
+                
+              });}, ),
               padding: EdgeInsets.only(top: MediaQuery.of(context).size.height*0.015),
             ),
             title: Padding(
