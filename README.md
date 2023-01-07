@@ -1,6 +1,6 @@
 # shiahub2
 
-A new Flutter project.
+This is my android app, ShiaHub. See https://play.google.com/store/apps/details?id=com.husseinabdallah.shiahub&hl=en_CA&gl=US&pli=1.
 
 ## Getting Started
 
