@@ -11,6 +11,7 @@ I hereby state, to the best of my knowledge and belief, that I have not programm
 The list of permissions required by the app can be found in the `AndroidManifest.xml` file:
 
 https://github.com/7seinfa/ShiaHub-2/blob/main/android/app/src/main/AndroidManifest.xml#L57-L60
+
 <br/>
 
 | Permission | Why it is required |
